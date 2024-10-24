@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <h1>aa</h1>
+
+    <!-- 
+    Below is connection.php file:
+    --------------------------------
+    
+    <?php
+    $con = mysqli_connect('localhost', 'root', '', 'crud');
+
+    if (!$con) {
+        die(mysqli_error($con));
+    }
+    ?>
+
+    --------------------------------
+    End of connection.php file code.
+
+    Below is  for the index.php file:
+    --------------------------------
+    
+    <?php include 'Connection.php'; ?>
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 20px;
+            }
+            div {
+                max-width: 400px;
+                margin: auto;
+                background: #fff;
+                padding: 20px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+            }
+            input[type="text"], input[type="number"] {
+                width: 100%;
+                padding: 10px;
+                margin: 10px 0;
+                border-radius: 5px;
+                border: 1px solid #ccc;
+            }
+            input[type="submit"], button {
+                background-color: #007bff;
+                color: white;
+                padding: 10px 15px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+            input[type="submit"]:hover, button a:hover {
+                background-color: #0056b3;
+            }
+            button a {
+                color: white;
+                text-decoration: none;
+            }
+            button {
+                background-color: #28a745;
+                margin-left: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div>
+            <form action="" method="POST">
+                <input type="text" name="fname" placeholder="Firstname"> <br><br>
+                <input type="text" name="lname" placeholder="Lastname"> <br><br>
+                <input type="number" name="age" placeholder="Age"> <br><br>
+                <input type="submit" name="save_btn" value="Save">
+                <button><a href="view.php">View</a></button>
+            </form>
+        </div>
+
+        <?php
+            if(isset($_POST['save_btn'])) {
+                $fname = $_POST['fname'];
+                $lname = $_POST['lname'];
+                $age = $_POST['age'];
+
+                $query = "INSERT INTO student (fname, lname, age) VALUES ('$fname', '$lname', $age)";
+
+                if(mysqli_query($con, $query)) {
+                    ?>
+                    <script>
+                        alert("Data inserted successfully !!")
+                    </script>
+                    <?php
+                } else {
+                    ?>
+                    <script>
+                        alert("Error occurred...")
+                    </script>
+                    <?php
+                }
+            }
+        ?>
+    </body>
+    </html>
+
+    --------------------------------
+    End of index.php file code.
+
+    Below is the view.php file:
+    --------------------------------
+    
+    <?php include 'Connection.php'; ?>
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>View Records</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                padding: 20px;
+            }
+            a {
+                text-decoration: none;
+                color: #fff;
+                background-color: #007bff;
+                padding: 8px 16px;
+                border-radius: 5px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            th, td {
+                padding: 10px;
+                text-align: center;
+                border: 1px solid #ccc;
+            }
+            th {
+                background-color: #007bff;
+                color: white;
+            }
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+            a:hover {
+                background-color: #0056b3;
+            }
+            td a {
+                background-color: #28a745;
+                padding: 5px 10px;
+                color: white;
+                border-radius: 3px;
+                text-decoration: none;
+            }
+            td a:hover {
+                background-color: #218838;
+            }
+            td a:last-child {
+                background-color: #dc3545;
+            }
+            td a:last-child:hover {
+                background-color: #c82333;
+            }
+        </style>
+    </head>
+    <body>
+
+    <a href="index.php"> Home </a>
+    <table border='1px' cellpadding='10px' cellspacing='0'>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Age</th>
+            <th colspan='2'>Actions</th>
+        </tr>
+
+        <?php
+        $query = "SELECT * FROM student";
+        $data = mysqli_query($con, $query);
+        $result = mysqli_num_rows($data);
+
+        if($result){
+
+            while ($row = mysqli_fetch_array($data)) {
+                ?>
+                    <tr>
+                        <td> <?php echo $row['fname']; ?> </td>
+                        <td> <?php echo $row['lname']; ?> </td>
+                        <td> <?php echo $row['age']; ?> </td>
+                        <td> <a href="update.php?id=<?php echo $row['id']; ?>"> Edit </a> </td>
+                        <td> <a 
+                                onclick = "return confirm('Are you sure, you want to delete ?')" 
+                                href = "delete.php?id=<?php echo $row['id']; ?>" > 
+                                Delete 
+                            </a> </td>
+                    </tr>
+                <?php
+            }
+
+        } else {
+            echo "<tr> <td colspan='5'> No record Found. </td> </tr>";
+        }
+        ?>
+        
+    </table>
+
+    </body>
+    </html>
+
+    --------------------------------
+    End of view.php file code.
+
+    Below is  the update.php file:
+    --------------------------------
+    
+    <?php include "Connection.php"; 
+        $id = $_GET['id'];
+        $select = "SELECT * FROM student WHERE id='$id' ";
+        $result = mysqli_query($con, $select);
+        $row = mysqli_fetch_array($result);
+    ?>
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Update Record</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                padding: 20px;
+            }
+            div {
+                max-width: 400px;
+                margin: auto;
+                background: #fff;
+                padding: 20px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+            }
+            input[type="text"], input[type="number"] {
+                width: 100%;
+                padding: 10px;
+                margin: 10px 0;
+                border-radius: 5px;
+                border: 1px solid #ccc;
+            }
+            input[type="submit"], button {
+                background-color: #007bff;
+                color: white;
+                padding: 10px 15px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+            input[type="submit"]:hover, button a:hover {
+                background-color: #0056b3;
+            }
+            button a {
+                color: white;
+                text-decoration: none;
+            }
+            button {
+                background-color: #28a745;
+                margin-left: 5px;
+            }
+        </style>
+    </head>
+    <body>
+
+    <div>
+        <form action="" method="POST">
+            <input type="text" name="fname" placeholder="Firstname" value="<?php echo $row['fname'] ?>" > <br><br>
+            <input type="text" name="lname" placeholder="Lastname" value="<?php echo $row['lname'] ?>" > <br><br>
+            <input type="number" name="age" placeholder="Age" value="<?php echo $row['age'] ?>" > <br><br>
+            <input type="submit" name="update" value="Update">
+        </form>
+    </div>
+
+    <?php
+
+    if(isset($_POST['update'])) {
+        $fname = $_POST['fname'];
+        $lname = $_POST['lname'];
+        $age = $_POST['age'];
+
+        $update = "UPDATE student SET fname='$fname', lname='$lname', age='$age' WHERE id='$id' ";
+
+        if(mysqli_query($con, $update)) {
+            ?>
+            <script>
+                alert('Record updated successfully');
+                window.location.href='view.php';
+            </script>
+            <?php
+        } else {
+            ?>
+            <script>
+                alert('Error occurred...');
+            </script>
+            <?php
+        }
+    }
+
+    ?>
+    </body>
+    </html>
+
+    --------------------------------
+    End of update.php file code.
+
+*** delete.php ***
+<?php include "Connection.php"; 
+    $id = $_GET['id'];
+    $query = "DELETE FROM student WHERE id = '$id' ";
+    $data = mysqli_query($con, $query);
+
+    if($data) {
+        ?>
+
+        <script>
+            window.location.href='view.php';
+        </script>
+
+        <?php
+    } else {
+        ?>
+
+        <script>    
+            alert('Data not deleted');
+            window.location.href='view.php';
+        </script>
+
+        <?php
+    }
+?>
+
+    -->
+</body>
+</html>
